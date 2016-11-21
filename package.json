@@ -1,0 +1,33 @@
+{
+  "name": "statist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/joona/statist.git"
+  },
+  "keywords": [
+    "static",
+    "site",
+    "generator"
+  ],
+  "author": "Joona Kulmala <jmkulmala@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joona/statist/issues"
+  },
+  "homepage": "https://github.com/joona/statist#readme",
+  "devDependencies": {
+    "bluebird": "^3.4.6",
+    "bluebird-co": "^2.2.0",
+    "co-fs": "^1.2.0",
+    "front-matter": "^2.1.0",
+    "glob": "^7.1.1",
+    "marked": "^0.3.6",
+    "swig": "^1.4.2"
+  }
+}
