@@ -1,6 +1,6 @@
 {
   "name": "statist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "url": "https://github.com/joona/statist/issues"
   },
   "homepage": "https://github.com/joona/statist#readme",
-  "devDependencies": {
+  "dependencies": {
     "bluebird": "^3.4.6",
     "bluebird-co": "^2.2.0",
     "co-fs": "^1.2.0",
