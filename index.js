@@ -57,10 +57,25 @@ const helpers = {
     var dirname = path.dirname(link); 
     console.log('writing page:', link);
 
+    let exists = true;
     try {
-      var exists = yield fsCo.stat(dirname);
+      yield fsCo.stat(dirname);
     } catch(err) {
-      yield fsCo.mkdir(dirname);
+      exists = false;
+    }
+
+    // try to recursively create the directory
+    if(exists == false) {
+      var dirnameParts = dirname.split('/');
+      var dirPath = '';
+      for(var i = 0; i < dirnameParts.length; i++) {
+        dirPath += dirnameParts[i] + '/';
+        try {
+          yield fsCo.stat(dirPath);
+        } catch(err) {
+          yield fsCo.mkdir(dirPath);
+        }
+      }
     }
 
     yield fsCo.writeFile(link, content);
@@ -123,22 +138,30 @@ class Statist {
     return yield helpers.writeFile(this.settings, linkPath, content);
   }
 
-  *readFrontMatterMarkdownPages(pattern) {
+  *readFrontMatterMarkdownPages(pattern, strip) {
     return yield (yield helpers.globPath(pattern).reduce((map, f) => {
       console.log('mapping front matter page:', f);
-      map[f] = co.wrap(this.readFrontMatterMarkdownPage)(f);
+      map[f] = co.wrap(this.readFrontMatterMarkdownPage)(f, strip);
       return map;
     }, {}));
   }
 
-  *readFrontMatterMarkdownPage(fp) {
+  *readFrontMatterMarkdownPage(fp, stripPrefix) {
     var file = yield fsCo.readFile(fp, 'utf8');
     var content = frontMatter(file);
     console.log('front-matter:', content);
     var body = marked(content.body);
     var attrs = content.attributes;
     content.body = body;
-    content.path = path.basename(fp, path.extname(fp));
+    
+    let dirname = path.dirname(fp);
+    let basename = path.basename(fp, path.extname(fp)); 
+    if(stripPrefix) {
+      dirname = dirname.replace(stripPrefix, '');
+      content.path = `${dirname}/${basename}`;
+    } else {
+      content.path = basename;
+    }
     return content;
   }
 
