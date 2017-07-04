@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const co = require('bluebird-co');
+const co = require('bluebird-co').co;
 const glob = require('glob');
 const Promise = require('bluebird');
 const fsCo = require('co-fs');
@@ -73,7 +73,7 @@ const helpers = {
         try {
           yield fsCo.stat(dirPath);
         } catch(err) {
-          yield fsCo.mkdir(dirPath);
+          try { yield fsCo.mkdir(dirPath); } catch(err) { }
         }
       }
     }
@@ -205,3 +205,35 @@ module.exports = {
     return new Statist(site, settings, options);
   }
 };
+
+if(!module.parent) {
+  const { exec } = require('child_process');
+
+  const cleanup = function() {
+    exec('tree ./tmp', (err, stdout, stderr) => {
+      console.log(stdout);
+    });
+    exec('rm -fr ./tmp');
+  };
+
+  co(function*(){
+    console.log('Self test');
+    const statist = new Statist({}, {
+      dest: 'tmp'
+    }, {});
+
+    yield [
+      statist.writeFile('foo/index.html', 'Foo'),
+      statist.writeFile('foo/baa/index.html', 'Foo'),
+      statist.writeFile('foo/baz/index.html', 'Foo')
+    ];
+  }).then(_ => {
+    console.log('Success');
+    cleanup();
+  }).catch(err => {
+    console.error('Error:', err.message);
+    console.log(err.stack);
+    cleanup();
+  });
+
+}
