@@ -90,6 +90,10 @@ class Statist {
     this.settings = settings || {};
     this.templates = {};
     this.swig = swig;
+    
+    if(options.swigOptions !== undefined) {
+      swig.setDefaults(options.swigOptions);
+    } 
 
     if(options.filters && typeof options.filters === "object") {
       Object.keys(options.filters).forEach(name => {
